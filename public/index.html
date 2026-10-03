@@ -35,6 +35,16 @@
             padding: 10px;
             border-radius: 6px;
             border: 1px solid #241618;
+            align-items: center;
+        }
+        .avatar-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            border: 2px solid #C24B4B;
+            background: #241618;
+            object-fit: cover;
+            margin-bottom: 8px;
         }
         .hp { color: #C24B4B; }
         select, button {
@@ -82,8 +92,16 @@
     <div class="arena hidden" id="game-screen">
         <h3 id="monster-title">Arène de Combat</h3>
         <div class="stats">
-            <div><span id='player-name-lbl'>Vous</span><br><span class="hp" id="player-hp">100</span>/<span id="player-maxhp">100</span> PV</div>
-            <div><span id="monster-name-lbl">Monstre</span><br><span class="hp" id="monster-hp">80</span>/<span id="monster-maxhp">80</span> PV</div>
+            <div>
+                <img id="player-avatar" class="avatar-box" src="" alt="Avatar">
+                <br><span id='player-name-lbl'>Vous</span>
+                <br><span class="hp" id="player-hp">100</span>/<span id="player-maxhp">100</span> PV
+            </div>
+            <div>
+                <div style="font-size: 2em; margin-bottom: 12px;">⚔️</div>
+                <span id="monster-name-lbl">Monstre</span>
+                <br><span class="hp" id="monster-hp">80</span>/<span id="monster-maxhp">80</span> PV
+            </div>
         </div>
 
         <div>
@@ -115,6 +133,8 @@
             const select = document.getElementById('char-select');
             player = JSON.parse(select.value);
 
+            // Attribution d'une image/avatar par défaut ou stylisée
+            document.getElementById('player-avatar').src = `https://via.placeholder.com/150/3C1A1A/F6E4E4?text=${player.name.charAt(0)}`;
             document.getElementById('player-name-lbl').innerText = player.name;
             document.getElementById('player-hp').innerText = player.hp;
             document.getElementById('player-maxhp').innerText = player.maxHp;
