@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRIMSON SNAKE - Abysse</title>
+    <style>
+        body {
+            background-color: #070505;
+            color: #f6e4e4;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+            color: #C24B4B;
+            text-shadow: 0 0 12px rgba(194, 75, 75, 0.6);
+            letter-spacing: 2px;
+        }
+        .game-container {
+            background: #170C0C;
+            border: 2px solid #3C1A1A;
+            padding: 20px;
+            max-width: 420px;
+            margin: 10px auto;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(194, 75, 75, 0.2);
+        }
+        canvas {
+            background: #050303;
+            border: 2px solid #241618;
+            display: block;
+            margin: 0 auto;
+            border-radius: 4px;
+        }
+        .score-board {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #C24B4B;
+        }
+        .controls {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            gap: 8px;
+            justify-content: center;
+        }
+        button {
+            background: #3C1A1A;
+            color: #F6E4E4;
+            border: 1px solid #C24B4B;
+            padding: 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #C24B4B;
+            color: #fff;
+            box-shadow: 0 0 10px #C24B4B;
+        }
+        .btn-up { grid-column: 2; }
+        .btn-left { grid-column: 1; grid-row: 2; }
+        .btn-down { grid-column: 2; grid-row: 2; }
+        .btn-right { grid-column: 3; grid-row: 2; }
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #C24B4B;
+            text-decoration: none;
+            border-bottom: 1px dashed #C24B4B;
+        }
+        .back-link:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>CRIMSON SNAKE</h1>
+    <div class="game-container">
+        <div class="score-board">Score : <span id="score">0</span></div>
+        <canvas id="snakeCanvas" width="360" height="360"></canvas>
+        
+        <div class="controls">
+            <button class="btn-up" onclick="changeDirection('UP')">▲</button>
+            <button class="btn-left" onclick="changeDirection('LEFT')">◀</button>
+            <button class="btn-down" onclick="changeDirection('DOWN')">▼</button>
+            <button class="btn-right" onclick="changeDirection('RIGHT')">▶</button>
+        </div>
+        
+        <br>
+        <a href="/" class="back-link">← Retourner à l'Arène RPG</a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("snakeCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const box = 20;
+        let snake = [];
+        snake[0] = { x: 9 * box, y: 10 * box };
+
+        let food = {
+            x: Math.floor(Math.random() * 18) * box,
+            y: Math.floor(Math.random() * 18) * box
+        };
+
+        let score = 0;
+        let d = "RIGHT";
+        let game;
+
+        document.addEventListener("keydown", direction);
+
+        function direction(event) {
+            if (event.keyCode == 37 && d != "RIGHT") d = "LEFT";
+            else if (event.keyCode == 38 && d != "DOWN") d = "UP";
+            else if (event.keyCode == 39 && d != "LEFT") d = "RIGHT";
+            else if (event.keyCode == 40 && d != "UP") d = "DOWN";
+        }
+
+        function changeDirection(newDir) {
+            if (newDir == "LEFT" && d != "RIGHT") d = "LEFT";
+            else if (newDir == "UP" && d != "DOWN") d = "UP";
+            else if (newDir == "RIGHT" && d != "LEFT") d = "RIGHT";
+            else if (newDir == "DOWN" && d != "UP") d = "DOWN";
+        }
+
+        function collision(head, array) {
+            for (let i = 0; i < array.length; i++) {
+                if (head.x == array[i].x && head.y == array[i].y) return true;
+            }
+            return false;
+        }
+
+        function draw() {
+            ctx.fillStyle = "#050303";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < snake.length; i++) {
+                ctx.fillStyle = (i == 0) ? "#C24B4B" : "#3C1A1A";
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+                ctx.strokeStyle = "#070505";
+                ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+            }
+
+            ctx.fillStyle = "#ff1a40";
+            ctx.shadowColor = "#ff1a40";
+            ctx.shadowBlur = 10;
+            ctx.fillRect(food.x, food.y, box, box);
+            ctx.shadowBlur = 0;
+
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            if (d == "LEFT") snakeX -= box;
+            if (d == "UP") snakeY -= box;
+            if (d == "RIGHT") snakeX += box;
+            if (d == "DOWN") snakeY += box;
+
+            if (snakeX == food.x && snakeY == food.y) {
+                score += 10;
+                document.getElementById("score").innerText = score;
+                food = {
+                    x: Math.floor(Math.random() * 18) * box,
+                    y: Math.floor(Math.random() * 18) * box
+                };
+            } else {
+                snake.pop();
+            }
+
+            let newHead = { x: snakeX, y: snakeY };
+
+            if (snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
+                clearInterval(game);
+                alert("Fin de partie, le serpent s'est éteint dans les ténèbres. Score : " + score);
+                location.reload();
+            }
+
+            snake.unshift(newHead);
+        }
+
+        game = setInterval(draw, 100);
+    </script>
+</body>
+</html>
