@@ -3,126 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRIMSON RPG</title>
+    <title>CRIMSON RPG - Arène</title>
     <style>
         body {
-            background-color: #0a0a0a;
-            color: #e0e0e0;
+            background-color: #070505;
+            color: #f6e4e4;
             font-family: 'Courier New', Courier, monospace;
             text-align: center;
             padding: 20px;
         }
         h1 {
-            color: #ff1a40;
-            text-shadow: 0 0 10px rgba(255, 26, 64, 0.6);
+            color: #C24B4B;
+            text-shadow: 0 0 12px rgba(194, 75, 75, 0.6);
+            letter-spacing: 2px;
         }
         .arena {
-            background: #141414;
-            border: 2px solid #33000a;
+            background: #170C0C;
+            border: 2px solid #3C1A1A;
             padding: 20px;
-            max-width: 400px;
+            max-width: 450px;
             margin: 20px auto;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(194, 75, 75, 0.2);
         }
         .stats {
             display: flex;
             justify-content: space-around;
             margin-bottom: 20px;
             font-weight: bold;
+            background: #0A0505;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #241618;
         }
-        .hp { color: #ff334b; }
-        button {
-            background: #260007;
-            color: #ffccd5;
-            border: 1px solid #ff1a40;
+        .hp { color: #C24B4B; }
+        select, button {
+            background: #3C1A1A;
+            color: #F6E4E4;
+            border: 1px solid #C24B4B;
             padding: 10px 15px;
-            margin: 5px;
+            margin: 6px;
             cursor: pointer;
             font-family: inherit;
             border-radius: 4px;
             transition: 0.2s;
         }
-        button:hover {
-            background: #ff1a40;
+        button:hover, select:hover {
+            background: #C24B4B;
             color: #fff;
-            box-shadow: 0 0 8px #ff1a40;
+            box-shadow: 0 0 10px #C24B4B;
         }
         #combat-log {
             margin-top: 20px;
-            background: #050505;
-            border: 1px solid #222;
-            padding: 10px;
-            height: 80px;
+            background: #050303;
+            border: 1px solid #221212;
+            padding: 12px;
+            height: 100px;
             overflow-y: auto;
-            font-size: 0.9em;
+            font-size: 0.85em;
             text-align: left;
-            color: #b0b0b0;
+            color: #b0a0a0;
+            border-radius: 4px;
         }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <h1>CRIMSON ABYSS</h1>
     
-    <div class="arena">
-        <h3>Arène de Combat</h3>
+    <div class="arena" id="setup-screen">
+        <h3>Choisissez votre Shinobi</h3>
+        <select id="char-select"></select>
+        <br>
+        <button onclick="startGame()">Entrer dans l'Arène</button>
+    </div>
+
+    <div class="arena hidden" id="game-screen">
+        <h3 id="monster-title">Arène de Combat</h3>
         <div class="stats">
-            <div>Vous<br><span class="hp" id="player-hp">100</span>/100 PV</div>
-            <div>Ombre<br><span class="hp" id="monster-hp">80</span>/80 PV</div>
+            <div><span id='player-name-lbl'>Vous</span><br><span class="hp" id="player-hp">100</span>/<span id="player-maxhp">100</span> PV</div>
+            <div><span id="monster-name-lbl">Monstre</span><br><span class="hp" id="monster-hp">80</span>/<span id="monster-maxhp">80</span> PV</div>
         </div>
 
         <div>
             <button onclick="performAction('attack')">Attaquer</button>
-            <button onclick="performAction('potion')">Boire Potion</button>
-            <button onclick="resetCombat()">Recommencer</button>
+            <button onclick="performAction('potion')">Fiole de Sang (+30)</button>
+            <button onclick="nextMonster()" id="next-btn" class="hidden">Suivant</button>
         </div>
 
-        <div id="combat-log">Un ennemi surgit des ténèbres... Préparez-vous.</div>
+        <div id="combat-log">Le combat commence... Restez sur vos gardes.</div>
     </div>
 
     <script>
-        let playerHp = 100;
-        let monsterHp = 80;
+        let player = {};
+        let currentMonster = {};
+
+        async function loadCharacters() {
+            const res = await fetch('/api/characters');
+            const chars = await res.json();
+            const select = document.getElementById('char-select');
+            chars.forEach(c => {
+                let opt = document.createElement('option');
+                opt.value = JSON.stringify(c);
+                opt.innerText = `${c.name} (${c.class}) - ATK: ${c.attackPower}`;
+                select.appendChild(opt);
+            });
+        }
+
+        async function startGame() {
+            const select = document.getElementById('char-select');
+            player = JSON.parse(select.value);
+
+            document.getElementById('player-name-lbl').innerText = player.name;
+            document.getElementById('player-hp').innerText = player.hp;
+            document.getElementById('player-maxhp').innerText = player.maxHp;
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+
+            await spawnNewMonster();
+        }
+
+        async function spawnNewMonster() {
+            const res = await fetch('/api/spawn-monster');
+            const data = await res.json();
+            currentMonster = data.monster;
+
+            document.getElementById('monster-name-lbl').innerText = currentMonster.name;
+            document.getElementById('monster-hp').innerText = currentMonster.hp;
+            document.getElementById('monster-maxhp').innerText = currentMonster.maxHp;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('combat-log').innerHTML = `Un(e) ${currentMonster.name} surgit des ténèbres !`;
+        }
 
         async function performAction(action) {
-            if (playerHp <= 0 || monsterHp <= 0) return;
+            if (player.hp <= 0 || currentMonster.hp <= 0) return;
 
-            try {
-                const response = await fetch('/api/combat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ playerHp, monsterHp, action })
-                });
-                const data = await response.json();
+            const res = await fetch('/api/combat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    playerHp: player.hp,
+                    playerMaxHp: player.maxHp,
+                    monsterHp: currentMonster.hp,
+                    monsterMaxHp: currentMonster.maxHp,
+                    monsterAttack: currentMonster.attackPower,
+                    action: action,
+                    attackPower: player.attackPower
+                })
+            });
+            const data = await res.json();
 
-                playerHp = data.playerHp;
-                monsterHp = data.monsterHp;
+            player.hp = data.playerHp;
+            currentMonster.hp = data.monsterHp;
 
-                document.getElementById('player-hp').innerText = playerHp;
-                document.getElementById('monster-hp').innerText = monsterHp;
-                
-                const logBox = document.getElementById('combat-log');
-                logBox.innerHTML += `<br> > ${data.log}`;
-                logBox.scrollTop = logBox.scrollHeight;
+            document.getElementById('player-hp').innerText = player.hp;
+            document.getElementById('monster-hp').innerText = currentMonster.hp;
 
-                if (playerHp <= 0) {
-                    logBox.innerHTML += `<br><span style="color:red;"><b>Vous avez péri dans les ténèbres...</b></span>`;
-                } else if (monsterHp <= 0) {
-                    logBox.innerHTML += `<br><span style="color:#00ff66;"><b>Monstre vaincu ! Gloire au sang crimson.</b></span>`;
-                }
-            } catch (err) {
-                console.error("Erreur de combat :", err);
+            const logBox = document.getElementById('combat-log');
+            logBox.innerHTML += `<br>> ${data.log}`;
+            logBox.scrollTop = logBox.scrollHeight;
+
+            if (player.hp <= 0) {
+                logBox.innerHTML += `<br><span style="color:#ff1a40;"><b>Vous avez péri dans l'abysse... Game Over.</b></span>`;
+            } else if (currentMonster.hp <= 0) {
+                logBox.innerHTML += `<br><span style="color:#7FBF7F;"><b>Ennemi éliminé ! Préparez-vous pour le suivant.</b></span>`;
+                document.getElementById('next-btn').classList.remove('hidden');
             }
         }
 
-        function resetCombat() {
-            playerHp = 100;
-            monsterHp = 80;
-            document.getElementById('player-hp').innerText = playerHp;
-            document.getElementById('monster-hp').innerText = monsterHp;
-            document.getElementById('combat-log').innerHTML = "Le combat recommence. Affrontez l'ombre.";
+        async function nextMonster() {
+            await spawnNewMonster();
         }
+
+        loadCharacters();
     </script>
 </body>
 </html>
