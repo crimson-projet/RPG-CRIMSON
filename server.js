@@ -28,6 +28,11 @@ app.get('/api/spawn-monster', (req, res) => {
     res.json({ monster: { ...randomMonster } });
 });
 
+// Route indispensable pour le mini-jeu Snake
+app.get('/snake', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'snake.html'));
+});
+
 app.post('/api/combat', (req, res) => {
     let { playerHp, playerMaxHp, monsterHp, monsterMaxHp, monsterAttack, action, attackPower } = req.body;
     let log = "";
@@ -65,5 +70,5 @@ app.post('/api/combat', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Serveur CRIMSON RPG en ligne sur le port ${PORT}`);
+    console.log(`Serveur CRIMSON ABYSS en ligne sur le port ${PORT}`);
 });
