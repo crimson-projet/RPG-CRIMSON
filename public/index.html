@@ -3,169 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRIMSON RPG - Hub</title>
+    <title>CRIMSON RPG</title>
     <style>
         body {
-            background-color: #080808;
-            color: #f0f0f0;
-            font-family: monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
             padding: 20px;
         }
-        .robot-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .robot-avatar {
-            width: 60px;
-            height: 60px;
-            background: #111;
-            border: 2px solid crimson;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 15px rgba(220, 20, 60, 0.4);
-            animation: floatRobot 3s ease-in-out infinite;
-        }
-        .robot-eyes {
-            width: 24px;
-            height: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .eye {
-            width: 6px;
-            height: 6px;
-            background-color: crimson;
-            border-radius: 50%;
-            box-shadow: 0 0 8px crimson;
-            animation: blinkEye 4s infinite;
-        }
-        @keyframes floatRobot {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-        @keyframes blinkEye {
-            0%, 96%, 100% { transform: scaleY(1); }
-            98% { transform: scaleY(0.1); }
-        }
         h1 {
-            color: crimson;
-            font-size: 1.6rem;
-            text-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
-            margin-bottom: 5px;
+            color: #ff1a40;
+            text-shadow: 0 0 10px rgba(255, 26, 64, 0.6);
         }
-        .subtitle {
-            font-size: 0.85rem;
-            color: #777;
-            margin-bottom: 25px;
-        }
-        .card {
-            width: 100%;
-            max-width: 380px;
-            background: #111;
-            border: 1px solid #222;
+        .arena {
+            background: #141414;
+            border: 2px solid #33000a;
+            padding: 20px;
+            max-width: 400px;
+            margin: 20px auto;
             border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
         }
-        .card h2 {
-            font-size: 1.1rem;
-            color: crimson;
-            margin-top: 0;
-            border-bottom: 1px solid #222;
-            padding-bottom: 8px;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 0.9rem;
-        }
-        button {
-            background-color: crimson;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 4px;
-            font-family: monospace;
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
             font-weight: bold;
+        }
+        .hp { color: #ff334b; }
+        button {
+            background: #260007;
+            color: #ffccd5;
+            border: 1px solid #ff1a40;
+            padding: 10px 15px;
+            margin: 5px;
             cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 0 10px rgba(220, 20, 60, 0.3);
-            transition: background 0.2s;
+            font-family: inherit;
+            border-radius: 4px;
+            transition: 0.2s;
         }
         button:hover {
-            background-color: #a00020;
+            background: #ff1a40;
+            color: #fff;
+            box-shadow: 0 0 8px #ff1a40;
         }
-        #quest-log {
-            font-size: 0.85rem;
-            color: #aaa;
-            height: 60px;
-            overflow-y: auto;
+        #combat-log {
+            margin-top: 20px;
             background: #050505;
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid #1a1a1a;
+            border: 1px solid #222;
+            padding: 10px;
+            height: 80px;
+            overflow-y: auto;
+            font-size: 0.9em;
+            text-align: left;
+            color: #b0b0b0;
         }
     </style>
 </head>
 <body>
 
-    <div class="robot-container">
-        <div class="robot-avatar">
-            <div class="robot-eyes">
-                <div class="eye"></div>
-                <div class="eye"></div>
-            </div>
+    <h1>CRIMSON ABYSS</h1>
+    
+    <div class="arena">
+        <h3>Arène de Combat</h3>
+        <div class="stats">
+            <div>Vous<br><span class="hp" id="player-hp">100</span>/100 PV</div>
+            <div>Ombre<br><span class="hp" id="monster-hp">80</span>/80 PV</div>
         </div>
-    </div>
 
-    <h1>CRIMSON RPG</h1>
-    <div class="subtitle">-- SYSTÈME DE QUÊTE v1.0 --</div>
-
-    <div class="card">
-        <h2>STATISTIQUES</h2>
-        <div class="stats-grid">
-            <div>PV : <span id="hp">100</span>/100</div>
-            <div>Niveau : <span id="level">1</span></div>
-            <div>Attaque : <span id="atk">15</span></div>
-            <div>Or : <span id="gold">0</span> 🪙</div>
+        <div>
+            <button onclick="performAction('attack')">Attaquer</button>
+            <button onclick="performAction('potion')">Boire Potion</button>
+            <button onclick="resetCombat()">Recommencer</button>
         </div>
-    </div>
 
-    <div class="card">
-        <h2>EXPLORATION</h2>
-        <div id="quest-log">En attente d'ordres... Le monde est sombre, choisis ton action.</div>
-        <button onclick="startQuest()">Lancer une Quête</button>
+        <div id="combat-log">Un ennemi surgit des ténèbres... Préparez-vous.</div>
     </div>
 
     <script>
-        let player = { hp: 100, level: 1, atk: 15, gold: 0 };
+        let playerHp = 100;
+        let monsterHp = 80;
 
-        function startQuest() {
-            const logs = [
-                "Tu t'enfonces dans les ruines de la zone interdite. Un ennemi surgit de l'ombre !",
-                "Combat serré ! Tu élimines une créature corrompue et récupères du loot.",
-                "Exploration calme. Tu trouves une vieille relique brillante dans la poussière.",
-                "Piège évité de justesse ! Ton agilité t'a sauvé la vie."
-            ];
-            
-            const randomLog = logs[Math.floor(Math.random() * logs.length)];
-            const goldFound = Math.floor(Math.random() * 20) + 5;
-            
-            player.gold += goldFound;
-            
-            document.getElementById("gold").innerText = player.gold;
-            document.getElementById("quest-log").innerHTML = `${randomLog}<br><b>+${goldFound} pièces d'or gagnées !</b>`;
+        async function performAction(action) {
+            if (playerHp <= 0 || monsterHp <= 0) return;
+
+            try {
+                const response = await fetch('/api/combat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ playerHp, monsterHp, action })
+                });
+                const data = await response.json();
+
+                playerHp = data.playerHp;
+                monsterHp = data.monsterHp;
+
+                document.getElementById('player-hp').innerText = playerHp;
+                document.getElementById('monster-hp').innerText = monsterHp;
+                
+                const logBox = document.getElementById('combat-log');
+                logBox.innerHTML += `<br> > ${data.log}`;
+                logBox.scrollTop = logBox.scrollHeight;
+
+                if (playerHp <= 0) {
+                    logBox.innerHTML += `<br><span style="color:red;"><b>Vous avez péri dans les ténèbres...</b></span>`;
+                } else if (monsterHp <= 0) {
+                    logBox.innerHTML += `<br><span style="color:#00ff66;"><b>Monstre vaincu ! Gloire au sang crimson.</b></span>`;
+                }
+            } catch (err) {
+                console.error("Erreur de combat :", err);
+            }
+        }
+
+        function resetCombat() {
+            playerHp = 100;
+            monsterHp = 80;
+            document.getElementById('player-hp').innerText = playerHp;
+            document.getElementById('monster-hp').innerText = monsterHp;
+            document.getElementById('combat-log').innerHTML = "Le combat recommence. Affrontez l'ombre.";
         }
     </script>
 </body>
