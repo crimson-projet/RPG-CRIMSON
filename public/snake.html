@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRIMSON SNAKE - Abysse</title>
+    <title>CRIMSON SNAKE - HD</title>
     <style>
         body {
             background-color: #070505;
@@ -74,14 +74,12 @@
             text-decoration: none;
             border-bottom: 1px dashed #C24B4B;
         }
-        .back-link:hover {
-            color: #fff;
-        }
+        .back-link:hover { color: #fff; }
     </style>
 </head>
 <body>
 
-    <h1>CRIMSON SNAKE</h1>
+    <h1>CRIMSON SNAKE HD</h1>
     <div class="game-container">
         <div class="score-board">Score : <span id="score">0</span></div>
         <canvas id="snakeCanvas" width="360" height="360"></canvas>
@@ -102,9 +100,7 @@
         const ctx = canvas.getContext("2d");
 
         const box = 20;
-        let snake = [];
-        snake[0] = { x: 9 * box, y: 10 * box };
-
+        let snake = [{ x: 9 * box, y: 10 * box }];
         let food = {
             x: Math.floor(Math.random() * 18) * box,
             y: Math.floor(Math.random() * 18) * box
@@ -112,7 +108,9 @@
 
         let score = 0;
         let d = "RIGHT";
-        let game;
+
+        const foodImg = new Image();
+        foodImg.src = "https://via.placeholder.com/20/C24B4B/FFFFFF?text=+";
 
         document.addEventListener("keydown", direction);
 
@@ -142,17 +140,18 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             for (let i = 0; i < snake.length; i++) {
-                ctx.fillStyle = (i == 0) ? "#C24B4B" : "#3C1A1A";
+                ctx.fillStyle = (i == 0) ? "#C24B4B" : "#241618";
                 ctx.fillRect(snake[i].x, snake[i].y, box, box);
-                ctx.strokeStyle = "#070505";
+                ctx.strokeStyle = "#3C1A1A";
                 ctx.strokeRect(snake[i].x, snake[i].y, box, box);
             }
 
-            ctx.fillStyle = "#ff1a40";
-            ctx.shadowColor = "#ff1a40";
-            ctx.shadowBlur = 10;
-            ctx.fillRect(food.x, food.y, box, box);
-            ctx.shadowBlur = 0;
+            if (foodImg.complete) {
+                ctx.drawImage(foodImg, food.x, food.y, box, box);
+            } else {
+                ctx.fillStyle = "#ff1a40";
+                ctx.fillRect(food.x, food.y, box, box);
+            }
 
             let snakeX = snake[0].x;
             let snakeY = snake[0].y;
@@ -177,14 +176,14 @@
 
             if (snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
                 clearInterval(game);
-                alert("Fin de partie, le serpent s'est éteint dans les ténèbres. Score : " + score);
+                alert("Échec critique. Le serpent s'est brisé dans les ténèbres. Score : " + score);
                 location.reload();
             }
 
             snake.unshift(newHead);
         }
 
-        game = setInterval(draw, 100);
+        let game = setInterval(draw, 110);
     </script>
 </body>
 </html>
