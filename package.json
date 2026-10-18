@@ -1,17 +1,13 @@
 {
-  "name": "crimson-ultimate",
+  "name": "crimson-quiz",
   "version": "1.0.0",
-  "description": "CRIMSON BOT ULTIMATE",
-  "main": "index.js",
+  "description": "CRIMSON QUIZ - Bot Telegram de quiz solo et multijoueur",
+  "main": "quiz.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node quiz.js"
   },
-  "keywords": [],
-  "author": "CRIMSON",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "dotenv": "^18.0.8",
+    "dotenv": "^16.4.7",
     "node-telegram-bot-api": "^0.66.0"
   }
 }
