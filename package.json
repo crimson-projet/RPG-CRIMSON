@@ -1,13 +1,13 @@
 {
   "name": "crimson-ultimate",
   "version": "1.0.0",
-  "description": "",
+  "description": "CRIMSON BOT ULTIMATE",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "CRIMSON",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
